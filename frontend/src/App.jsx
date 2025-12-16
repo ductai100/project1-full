@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 
-const API =
-  import.meta.env.VITE_API_URL || "https://project1-full.onrender.com";
-
-export default function App() {
+function App() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch(`${API}/api/hello`)
-      .then((res) => res.json())
-      .then(setData)
-      .catch((e) => setData({ error: String(e) }));
+    fetch(`${import.meta.env.VITE_API_URL}/api/hello`)
+      .then(res => res.json())
+      .then(data => setData(data));
   }, []);
 
   return (
-    <div style={{ padding: 24, fontFamily: "sans-serif" }}>
+    <div style={{ padding: 40 }}>
       <h1>Project 1 Fullstack</h1>
-      <p><b>Backend:</b> {API}</p>
+      <p>
+        Backend: {import.meta.env.VITE_API_URL}
+      </p>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 }
+
+export default App;
