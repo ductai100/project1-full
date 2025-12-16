@@ -16,6 +16,18 @@ const DB_PATH = path.join(__dirname, "data.json");
 // API ROUTES
 // =======================
 
+// ROOT ROUTE
+app.get("/", (req, res) => {
+  res.send(`
+    <h2>Backend is running 🚀</h2>
+    <ul>
+      <li><a href="/api/health">/api/health</a></li>
+      <li><a href="/api/hello">/api/hello</a></li>
+      <li><a href="/api/db">/api/db</a></li>
+    </ul>
+  `);
+});
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, message: "Backend is running!" });
