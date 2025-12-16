@@ -1,62 +1,45 @@
-// Helpers to read/write JSON DB
-function readDB() {
-  const raw = fs.readFileSync(DB_PATH, "utf-8");
-  return JSON.parse(raw);
-}
-function writeDB(db) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
-}
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 
-// Student info
-app.get("/api/student", (req, res) => {
-  const db = readDB();
-  res.json(db.student);
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// =======================
+// DATABASE (JSON FILE)
+// =======================
+const DB_PATH = path.join(__dirname, "data.json");
+
+// =======================
+// API
+// =======================
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, message: "Backend is running!" });
 });
 
-// GET todos
-app.get("/api/todos", (req, res) => {
-  const db = readDB();
-  res.json(db.todos || []);
+app.get("/api/db", (req, res) => {
+  try {
+    const raw = fs.readFileSync(DB_PATH, "utf-8");
+    res.json(JSON.parse(raw));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// POST todo
-app.post("/api/todos", (req, res) => {
-  const { title } = req.body || {};
-  if (!title || !title.trim()) return res.status(400).json({ error: "title is required" });
+// =======================
+// SERVE FRONTEND (VITE BUILD)
+// =======================
+const FRONTEND_DIST = path.join(__dirname, "../frontend/dist");
+app.use(express.static(FRONTEND_DIST));
 
-  const db = readDB();
-  db.todos = db.todos || [];
-
-  const nextId = db.todos.length ? Math.max(...db.todos.map(t => t.id)) + 1 : 1;
-  const todo = { id: nextId, title: title.trim(), done: false };
-
-  db.todos.push(todo);
-  writeDB(db);
-
-  res.status(201).json(todo);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(FRONTEND_DIST, "index.html"));
 });
 
-// DELETE todo
-app.delete("/api/todos/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const db = readDB();
-  const before = (db.todos || []).length;
-
-  db.todos = (db.todos || []).filter(t => t.id !== id);
-  if (db.todos.length === before) return res.status(404).json({ error: "not found" });
-
-  writeDB(db);
-  res.json({ ok: true });
-});
-
-// TOGGLE done
-app.patch("/api/todos/:id/toggle", (req, res) => {
-  const id = Number(req.params.id);
-  const db = readDB();
-  const todo = (db.todos || []).find(t => t.id === id);
-  if (!todo) return res.status(404).json({ error: "not found" });
-
-  todo.done = !todo.done;
-  writeDB(db);
-  res.json(todo);
+// =======================
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
 });
