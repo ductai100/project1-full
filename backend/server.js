@@ -34,9 +34,10 @@ app.get("/api/db", (req, res) => {
 const FRONTEND_DIST = path.join(__dirname, "../frontend/dist");
 app.use(express.static(FRONTEND_DIST));
 
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(FRONTEND_DIST, "index.html"));
 });
+
 
 // =======================
 const PORT = process.env.PORT || 10000;
