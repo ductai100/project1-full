@@ -1,6 +1,10 @@
-[
-  {
-    "id": 1,
-    "content": "Hello from JSON database"
-  }
-]
+{
+  "student": {
+    "hoTen": "Nguyễn Đức Tài",
+    "mssv": "DH52201386",
+    "lop": "D22_TH09"
+  },
+  "todos": [
+    { "id": 1, "title": "Demo CRUD", "done": false }
+  ]
+}
